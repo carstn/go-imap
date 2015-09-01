@@ -395,6 +395,14 @@ func (c *Client) UIDCopy(seq *SeqSet, mbox string) (cmd *Command, err error) {
 	return c.Send("UID COPY", seq, c.Quote(UTF7Encode(mbox)))
 }
 
+// UIDMove implements RFC 6851, which allows for atomic moves.
+func (c *Client) UIDMove(seq *SeqSet, mbox string) (cmd *Command, err error) {
+	if !c.Caps["MOVE"] {
+		return nil, NotAvailableError("MOVE")
+	}
+	return c.Send("UID MOVE", seq, c.Quote(UTF7Encode(mbox)))
+}
+
 // SetQuota changes the resource limits of the specified quota root. See RFC
 // 2087 for additional information.
 func (c *Client) SetQuota(root string, quota ...*Quota) (cmd *Command, err error) {
